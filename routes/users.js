@@ -4,8 +4,7 @@ const userController = require('../controllers/userController');
 
 router.post(
     '/',
-    userController.createUser,
-    userController.verificationEmail
+    userController.createUser
 );
 
 router.get(

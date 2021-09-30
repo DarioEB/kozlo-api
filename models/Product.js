@@ -7,44 +7,33 @@ const productSchema = new Schema({
         required: true,
         trim: true
     },
-    tag: {
-        type: String,
-        required: true,
-        trim: true
-    },
-    color: {
+    brand: {
         type: String,
         required: true,
         trim: true
     },
     price: {
         type: Number,
-        required: true,
-        trim: true
-    },
-    waist: {
-        type: mongoose.Schema.Types.DocumentArray,
-        ref: 'Waist',
         required: true
     },
-    image: {
-        type: String,
-        required: true,
-        trim: true
+    tags: {
+        type: Array
+    },
+    category: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Category'
+    },
+    waists: {
+        type: Array,
+        required: true
     },
     images: {
         type: Array,
         required: true
     },
-    stock: {
-        type: Number,
-        required: true,
-        trim: true
-    },
-    category: {
-        type: mongoose.Schema.Types.Subdocument,
-        ref: 'Category',
-        required: true
+    created: {
+        type: Date,
+        default: Date.now()
     }
 });
 

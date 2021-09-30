@@ -4,7 +4,6 @@ const nodemailer = require('nodemailer');
 const uuid = require('uuid');
 
 exports.createUser = async (req, res, next) => {
-
     const { email, password} = req.body;
     let user = await User.findOne({email});
     if(user) {
@@ -22,6 +21,7 @@ exports.createUser = async (req, res, next) => {
         await user.save(); // Guarda el usuario
         req.user = user;
         // res.json({message: 'Usuario registrado correctamente'});
+        return res.json({user, message: 'Usuario creado correctamente.'})
         next();
     } catch ( error ) {
         res.status(500).json({message: 'Hubo un error'});
