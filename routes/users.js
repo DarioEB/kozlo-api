@@ -4,13 +4,13 @@ const userController = require('../controllers/userController');
 
 router.post(
     '/',
-    userController.createUser
+    userController.newAccount
 );
 
 router.get(
     '/validation/:id',
-    userController.validationUser,
-    userController.updateUser
+    userController.accountValidation,
+    userController.accountUpdate
 );
 
 

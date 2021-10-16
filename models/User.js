@@ -7,6 +7,11 @@ const userSchema = new Schema({
         required: true,
         trim: true
     },
+    surname: {
+        type: String,
+        required: true,
+        trim: true
+    },
     email: {
         type: String,
         required: true,
@@ -31,9 +36,9 @@ const userSchema = new Schema({
         type: Boolean,
         default: false
     },
-    shop_cart: {
-        type: Array,
-        default: null
+    cart: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Cart'
     },
     type: {
         type: String,

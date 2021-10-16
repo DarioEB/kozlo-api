@@ -30,6 +30,7 @@ exports.createProduct = async (req, res, next) => {
             product.brand = req.body.brand;
             product.tags = req.body.tags;
             product.category = req.body.category;
+            product.discount = req.body.discount;
             // Modifica el nombre de las imagenes dentro del producto
             req.files.forEach( (file, i) => {
                 product.images[i] = file.filename
@@ -60,8 +61,6 @@ exports.getProducts = async (req, res, next) => {
 
     try {
         const products = await Product.find({}).populate('category');
-        console.log(products);
-
         res.json({products});
     } catch (error) {
         console.log(error);

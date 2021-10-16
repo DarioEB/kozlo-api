@@ -37,9 +37,6 @@ exports.createCategory = async (req, res, next) => {
             category.name = req.body.name;
             category.waists = req.body.waists;
             category.image = req.file.filename;
-
-            console.log(req.body);
-            console.log(req.file);
             
             try {
                 await category.save();

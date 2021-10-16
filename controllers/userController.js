@@ -1,27 +1,32 @@
 const User = require('../models/User');
+const Cart = require('../models/Cart');
 const bcryptjs = require('bcryptjs');
 const nodemailer = require('nodemailer');
 const uuid = require('uuid');
 
-exports.createUser = async (req, res, next) => {
-    const { email, password} = req.body;
-    let user = await User.findOne({email});
-    if(user) {
-        return res.status(401).json({message: 'Ya existe alguien registrado con este mail, por favor revise sus datos.'});
-    }
-
-    // Usuario no existe
-    user = new User(req.body);
-    user.validation = uuid.v4();
-    // Hashear password
-    const salt = await bcryptjs.genSalt(10);
-    user.password = await bcryptjs.hash(password, salt);
-
+exports.newAccount = async (req, res, next) => {
+    const { email, password } = req.body;
+    
     try {
+        let user = await User.findOne({email});
+    
+        if(user) {
+            return res.status(401).json({message: 'Ya existe alguien registrado con este mail, por favor revise sus datos.'});
+        }
+        const cart = new Cart();
+        cart.save();
+        // Usuario no existe
+        user = new User(req.body);
+        user.validation = uuid.v4();
+        user.cart = cart._id;
+        // Hashear password
+        const salt = await bcryptjs.genSalt(10);
+        user.password = await bcryptjs.hash(password, salt);
+        
         await user.save(); // Guarda el usuario
         req.user = user;
         // res.json({message: 'Usuario registrado correctamente'});
-        return res.json({user, message: 'Usuario creado correctamente.'})
+        return res.json({user, message: 'Usuario creado correctamente.'});
         next();
     } catch ( error ) {
         res.status(500).json({message: 'Hubo un error'});
@@ -29,7 +34,7 @@ exports.createUser = async (req, res, next) => {
     }
 }
 
-exports.verificationEmail = async (req, res, next) => {
+exports.emailVerification = async (req, res, next) => {
     const user = req.user;
     const transporter = nodemailer.createTransport({
         host: "smtp.gmail.com",
@@ -55,7 +60,7 @@ exports.verificationEmail = async (req, res, next) => {
     }
 }
 
-exports.validationUser = async (req, res, next) => {
+exports.accountValidation = async (req, res, next) => {
     
     const id = req.params.id;
     console.log(id);
@@ -74,9 +79,10 @@ exports.validationUser = async (req, res, next) => {
     }
 }
 
-exports.updateUser = async (req, res, next) => {
+exports.accountUpdate = async (req, res, next) => {
     const { 
         name, 
+        surname,
         email, 
         phone, 
         password, 
@@ -88,10 +94,11 @@ exports.updateUser = async (req, res, next) => {
     const newUser = {};
     
     newUser.name = name;
+    newUser.surname = surname;
     newUser.email = email;
     newUser.phone = phone;
     newUser.password = password;
-    newUser.validation = validation;
+    newUser.validation = '';
     newUser.validated = validated;
     newUser.shop_cart = shop_cart;
     newUser.type = type;
