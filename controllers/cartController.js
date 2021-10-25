@@ -1,5 +1,7 @@
 const Cart = require('../models/Cart');
 const Product = require('../models/Product');
+require('dotenv').config({path: 'variables.env'});
+
 exports.createCart = async (req, res, next) => {
     try {
         const cart = new Cart();

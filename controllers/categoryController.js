@@ -68,3 +68,35 @@ exports.getImageFile = async (req, res) => {
         console.log(error);
     }
 }
+
+exports.deleteCategory = async (req, res, next) => {
+    const id = req.params.id;
+    try {
+        let category = await Category.findById(id);
+        if(!category) {
+            res.status(401).json({message: 'El Id no pertenece a ninguna categoría'});
+        }
+
+        req.category = category;
+        await Category.findOneAndRemove(category._id);
+        next();
+    } catch (error) {
+        console.log(error);
+        res.status(500).send('Hubo un error');
+    }
+}
+
+exports.deleteFileCategory = async (req, res, next) => {
+    const category = req.category;
+    try {
+        // Verificando si existe el archivo en el servidor
+        if (fs.existsSync(__dirname + `/../uploads/categories/${category.image}`)) {
+            fs.unlinkSync(__dirname + `/../uploads/categories/${category.image}`);
+            console.log(`Archivo ${category.image} eliminado`);
+        }
+        res.json({message: 'Categoría eliminada correctamente', category})
+    } catch (error) {
+        console.log(error);
+        res.status(500).send('Hubo un error');
+    }
+}

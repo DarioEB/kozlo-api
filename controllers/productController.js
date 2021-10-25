@@ -31,6 +31,7 @@ exports.createProduct = async (req, res, next) => {
             product.tags = req.body.tags;
             product.category = req.body.category;
             product.discount = req.body.discount;
+            product.young = req.body.young;
             // Modifica el nombre de las imagenes dentro del producto
             req.files.forEach( (file, i) => {
                 product.images[i] = file.filename
@@ -39,6 +40,7 @@ exports.createProduct = async (req, res, next) => {
             req.body.waists.forEach( (waist, i) => {
                 product.waists[i] = {waist, stock: req.body.stock[i]}
             });
+            
             
             try {
                 await product.save();
@@ -103,3 +105,37 @@ exports.getImageFile = async (req, res) => {
         console.log(error);
     }
 }
+
+exports.deleteProduct = async (req, res, next) => {
+    const id = req.params.id;
+    try {
+        let product = await Product.findById(id);
+        if(!product){
+            res.status(401).json({message: 'El id no pertenece a ningún producto'});
+        }
+
+        req.product = product;
+        await Product.findOneAndRemove(product._id);
+        next();
+    } catch (error) {
+        console.log(error);
+        res.status(500).send('Hubo un error');
+    }
+}
+
+exports.deleteFilesProduct = async (req, res, next) => {
+    const product = req.product;
+    try {
+        product.images.forEach(image => {
+            // Verificando si existe el archivo en el servidor
+            if (fs.existsSync(__dirname + `/../uploads/products/${image}`)) {
+                fs.unlinkSync(__dirname + `/../uploads/products/${image}`);
+            }
+        });
+        res.json({message: 'Producto eliminado correctamente', product});
+    } catch (error) {
+        console.log(error);
+        res.status(500).send('Hubo un error');
+    }
+}
+

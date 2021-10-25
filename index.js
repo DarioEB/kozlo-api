@@ -17,6 +17,9 @@ app.use('/api/products', require('./routes/products'));
 app.use('/api/tags', require('./routes/tags'));
 app.use('/api/carts', require('./routes/carts'));
 app.use('/api/process-payment', require('./routes/payment'));
+app.use('/api/email', require('./routes/mail'));
+app.use('/api/orders', require('./routes/orders'));
+app.use('/api/newsletter', require('./routes/newsletter'));
 
 app.listen(port, '0.0.0.0', () => {
     console.log(`El servidor está funcionando en el puerto ${port}`);

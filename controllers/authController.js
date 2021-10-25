@@ -13,11 +13,16 @@ exports.authenticateUser = async (req, res, next) => {
         return next();
     }
 
+    if(user.validation !== '') {
+        res.status(401).json({message: 'Esta cuenta todavía no ha sido verificada. Revise su correo eletrónico para poder verificar su cuenta.'})
+        return next();
+    }
+
     if(bcryptjs.compareSync(password, user.password)) {
         const token = jwt.sign({
             id: user._id,
             name: user.name,
-            user: user.surname,
+            surname: user.surname,
             email: user.email,
             phone: user.phone,
             password: user.password,
@@ -25,14 +30,15 @@ exports.authenticateUser = async (req, res, next) => {
             validated: user.validated,
             cart: user.cart,
             type: user.type,
-            type: user.created
+            shops: user.shops,
+            created: user.created
         }, process.env.SECRET, {
             expiresIn: '8h'
         });
 
-        res.json({token});
+        res.json({token, message: "Datos ingresados correctos"});
     } else {
-        res.status(401).json({message: 'Password incorrecto'});
+        res.status(401).json({message: 'Datos ingresados correctos'});
         return next();
     }
 }

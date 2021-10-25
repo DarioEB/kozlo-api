@@ -3,7 +3,7 @@ const Cart = require('../models/Cart');
 const bcryptjs = require('bcryptjs');
 const nodemailer = require('nodemailer');
 const uuid = require('uuid');
-
+require('dotenv').config({path: 'variables.env'});
 exports.newAccount = async (req, res, next) => {
     const { email, password } = req.body;
     
@@ -26,7 +26,7 @@ exports.newAccount = async (req, res, next) => {
         await user.save(); // Guarda el usuario
         req.user = user;
         // res.json({message: 'Usuario registrado correctamente'});
-        return res.json({user, message: 'Usuario creado correctamente.'});
+        res.json({user, message: 'Usuario creado correctamente.'});
         next();
     } catch ( error ) {
         res.status(500).json({message: 'Hubo un error'});
@@ -34,40 +34,51 @@ exports.newAccount = async (req, res, next) => {
     }
 }
 
-exports.emailVerification = async (req, res, next) => {
-    const user = req.user;
-    const transporter = nodemailer.createTransport({
-        host: "smtp.gmail.com",
-        port: 465,
-        secure: true,
-        auth: {
-            user: '2d.freelance.dev@gmail.com',
-            pass: 'aibkupvlfyzwidja'
-        }
-    });
+exports.getUsers = async (req, res) => {
     try {
-        const message = await transporter.sendMail({
-            from: 'Kozlo <kozlo.com>',
-            to: user.email,
-            subject: `Verificación de cuenta en Kozlo`,
-            text: `Hola ${user.name}, para terminar tu registro en Kozlo.com haz click en este link: http://192.168.100.218:3000/account/validation/${user.validation}`
-        });
-        console.log(message);
-        res.status(200).json({message: `Se envió un mail a ${user.email} para verificar su cuenta.`, user});
+        const users = await User.find();
+        res.json({users});
     } catch (error) {
         console.log(error);
-        res.status(500).json({message: 'Hubo un error al enviar el E-mail'});
+        res.status(500).send('Hubo un error');
     }
 }
+
+exports.emailVerification = async (req, res, next) => {
+    const user = req.user;
+    console.log('Email verification')
+    let transporter = nodemailer.createTransport({
+        host: "smtp.hostinger.com",
+        port: 465,
+        secure: true, // true for 465, false for other ports
+        auth: {
+            user: "info@kozlohombres.com", // generated ethereal user
+            pass: process.env.PASSWORD_EMAIL, // generated ethereal password
+        },
+    });
+    
+    let info = await transporter.sendMail({
+        from: 'Kozlo <info@kozlohombres.com>', // sender address
+        to: user.email, // list of receivers
+        subject: "Verificación de cuenta en Kozlo", // Subject line
+        text: `Hola ${user.name}, para terminar tu registro en kozlohombres.com haz click en este link: ${process.env.FRONEND_URL}/account/validation/${user.validation}`, // plain text body
+    });
+
+    console.log("Message sent: %s", info.messageId);
+    
+    console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+
+}
+
+// text: `Hola ${user.name}, para terminar tu registro en kozlohombres.com haz click en este link: http://192.168.100.218:3000/account/validation/${user.validation}`
 
 exports.accountValidation = async (req, res, next) => {
     
     const id = req.params.id;
-    console.log(id);
     try {
         let user = await User.findOne({validation:id});
         if(!user) {
-            res.status(400).json({message: 'Id incorrecto, ingrese nuevamente'});
+            return res.status(401).json({message: 'Id incorrecto, ingrese nuevamente'});
         }
         user.validated = true;
         req.params.id = user._id;
@@ -85,9 +96,7 @@ exports.accountUpdate = async (req, res, next) => {
         surname,
         email, 
         phone, 
-        password, 
-        validation, 
-        validated, 
+        password,
         shop_cart, 
         type
     } = req.user;
@@ -99,9 +108,10 @@ exports.accountUpdate = async (req, res, next) => {
     newUser.phone = phone;
     newUser.password = password;
     newUser.validation = '';
-    newUser.validated = validated;
+    newUser.validated = true;
     newUser.shop_cart = shop_cart;
     newUser.type = type;
+    
     try {
         let user = await User.findById(req.params.id);
         if(!user) {
@@ -109,7 +119,7 @@ exports.accountUpdate = async (req, res, next) => {
         }
         user = await User.findByIdAndUpdate({_id: req.params.id}, {$set: newUser}, {new: true});
         
-        res.json({user});
+        return res.json({user});
     } catch (error) {
         console.log(error);
     }

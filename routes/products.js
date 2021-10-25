@@ -23,4 +23,10 @@ router.get(
     productController.getProduct
 );
 
+router.delete(
+    '/:id',
+    productController.deleteProduct,
+    productController.deleteFilesProduct
+);
+
 module.exports = router;

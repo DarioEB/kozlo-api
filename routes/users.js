@@ -4,13 +4,19 @@ const userController = require('../controllers/userController');
 
 router.post(
     '/',
-    userController.newAccount
+    userController.newAccount,
+    userController.emailVerification
 );
 
 router.get(
     '/validation/:id',
     userController.accountValidation,
     userController.accountUpdate
+);
+
+router.get(
+    '/',
+    userController.getUsers
 );
 
 

@@ -44,6 +44,9 @@ const userSchema = new Schema({
         type: String,
         default: 'staff'
     },
+    shops: {
+        type: Array
+    },
     created: {
         type: Date,
         default: Date.now()
