@@ -20,6 +20,7 @@ app.use('/api/process-payment', require('./routes/payment'));
 app.use('/api/email', require('./routes/mail'));
 app.use('/api/orders', require('./routes/orders'));
 app.use('/api/newsletter', require('./routes/newsletter'));
+app.use('/api/contact', require('./routes/contact'));
 
 app.listen(port, '0.0.0.0', () => {
     console.log(`El servidor está funcionando en el puerto ${port}`);

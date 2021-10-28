@@ -1,6 +1,7 @@
 const Newsletter = require('../models/Newsletter');
 const nodemailer = require('nodemailer')
 require('dotenv').config({path: 'variables.env'});
+const Contact = require('../models/Contact');
 exports.createNewsletter = async (req, res, next) => {
     const { email } = req.body;
     try {
@@ -41,4 +42,41 @@ Gracias por elegirnos.
 
     console.log("Message sent: %s", info.messageId);
     console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+}
+
+exports.createContact = async (req, res, next) => {
+    
+    const {name, email, subject, message} = req.body;
+
+    console.log(req.body);
+
+    try {
+        let transporter = nodemailer.createTransport({
+            host: "smtp.hostinger.com",
+            port: 465,
+            secure: true, // true for 465, false for other ports
+            auth: {
+                user: "info@kozlohombres.com", // generated ethereal user
+                pass: process.env.PASSWORD_EMAIL, // generated ethereal password
+            },
+        });
+        let info = await transporter.sendMail({
+            from: 'Kozlo <info@kozlohombres.com>', // sender address
+            to: email, // list of receivers
+            subject: "Hemos recibido tu mensaje, gracias por comunicarte con nosotros.", // Subject line
+            text: `
+            Hola ${name}, gracias por comunicarte con nosotros, recibimos correctamente tu solicitud.
+            `, // plain text body
+        });
+        
+        const contact = new Contact(req.body);
+        await contact.save();
+        res.json({contact});
+        next();
+        console.log("Message sent: %s", info.messageId);
+        console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: 'Hubo un error'})
+    }
 }
