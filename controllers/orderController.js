@@ -17,7 +17,7 @@ exports.getOrder = async (req, res, next) => {
 
 exports.getOrders = async (req, res, next) => {
     try {
-        const orders = await Shop.find().sort("created");
+        const orders = await Shop.find().sort({created: -1});
         res.json({orders});
         next();
     } catch (error) {
