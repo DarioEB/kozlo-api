@@ -62,7 +62,7 @@ exports.createProduct = async (req, res, next) => {
 exports.getProducts = async (req, res, next) => {
 
     try {
-        const products = await Product.find({}).populate('category');
+        const products = await Product.find({}).sort({created: -1}).populate('category');
         res.json({products});
     } catch (error) {
         console.log(error);
