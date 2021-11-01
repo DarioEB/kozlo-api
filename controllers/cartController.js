@@ -5,7 +5,6 @@ require('dotenv').config({path: 'variables.env'});
 exports.createCart = async (req, res, next) => {
     try {
         const cart = new Cart();
-        
     } catch (error) {
         console.log(error);
         res.status(500).send('Hubo un error');
