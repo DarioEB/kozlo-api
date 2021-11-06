@@ -5,7 +5,8 @@ const paymentController = require('../controllers/paymentController');
 router.post(
     '/',
     paymentController.payment,
-    paymentController.emailPaymentShop
+    paymentController.emailPaymentShop,
+    paymentController.emailOrderShop
 );
 
 module.exports = router;

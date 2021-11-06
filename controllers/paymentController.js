@@ -210,26 +210,37 @@ Gracias por elegirnos.
 `, // plain text body
     });
 
-    console.log("Message sent: %s", info.messageId);
-    // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
+    next();
 
-    // Preview only available when sending through an Ethereal account
-    console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));23
+    console.log("Message sent: %s", info.messageId);
+    console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
 }
 
+exports.emailOrderShop = async (req, res, next) => {
 
+    const shop = req.shop;
 
-    // mercadopago.payment.save(payment_data)
-    //     .then( response => {
-    //         const {response: data} = response;
-    //         // console.log(response);
-    //         res.status(response.status).json({
-    //             status_detail: data.status_detail,
-    //             status: data.status,
-    //             id: data.id
-    //         });
-    //     })
-    //     .catch( (error) => {
-    //         console.log(error);
-    //         res.status(error.status).send(error);  
-    //     })
+    let transporter = nodemailer.createTransport({
+        host: "smtp.hostinger.com",
+        port: 465,
+        secure: true, // true for 465, false for other ports
+        auth: {
+            user: "info@kozlohombres.com", // generated ethereal user
+            pass: process.env.PASSWORD_EMAIL, // generated ethereal password
+        },
+    });
+
+    let info = await transporter.sendMail({
+        from: 'Kozlo <info@kozlohombres.com>', // sender address
+        to: `hombreskozlo@gmail.com`, // list of receivers
+        subject: `Confirmación de pago de la compra #${shop._id}`, // Subject line
+        text: `
+Notificación de compra desde la página web kozlohombres.com.
+
+Se ha confirma el pago de la compra con código ${order._id}. Revisa el adm para verificar y realizar el envío.
+`, 
+    });
+
+    console.log("Message sent: %s", info.messageId);
+    console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+}

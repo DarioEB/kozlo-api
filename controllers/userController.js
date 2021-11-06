@@ -125,3 +125,13 @@ exports.accountUpdate = async (req, res, next) => {
     }
 }
 
+exports.getUsers = async (req, res, next) => {
+
+    try {   
+        const users = await User.find();
+        res.json({users, message: 'Usuarios recuperados'});
+    } catch (error) {
+        res.status(500).json({message: 'Hubo un error'});
+    }
+}
+
