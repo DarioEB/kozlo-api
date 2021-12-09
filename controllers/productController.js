@@ -55,7 +55,6 @@ exports.createProduct = async (req, res, next) => {
             return next();
         }
     });
-
 }
 
 // Obtener imagen de un producto
